@@ -1,0 +1,39 @@
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/mixins";
+@import "../../node_modules/bootstrap/scss/variables";
+
+@import "../variables.scss";
+
+.navbar {
+  background-color: $green-400;
+  padding: $size-050 $size-100;
+  box-sizing: border-box;
+  height: $size-350;
+
+  .buttons {
+    display: flex;
+    gap: $size-100;
+
+    button {
+      max-height: $size-250;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .active {
+      background-color: $green-100;
+      border: none;
+
+      &:hover {
+        color: $green-500
+      }
+    }
+
+    :not(.active) {
+      background-color: transparent;
+      border: none;
+      color: $gray-FFF
+    }
+  }
+}
