@@ -52,3 +52,16 @@ export async function searchCars(): Promise<Car[]> {
 
   return body as Car[]
 }
+
+export async function deleteCar(id: number): Promise<void> {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cars/${id}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${sessionStorage.getItem("jwt")}`,
+      }
+    }
+  )
+
+  if (!response.ok) throw new Error("Response is not ok")
+}

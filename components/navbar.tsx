@@ -1,6 +1,5 @@
 import styles from "../styles/components/navbar.module.scss"
 import useAuth from "../hooks/useAuth";
-import {useLayoutEffect, useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
 
 type Mapping = {
@@ -30,10 +29,16 @@ export default function Navbar() {
     router.push(link)
   }
 
+  const onLogout = () => {
+    sessionStorage.removeItem("jwt");
+    router.push("/login");
+  }
+
   return claims && (
     <nav className={`navbar ${styles.navbar}`}>
       <form className={`${styles.buttons}`}>
-        <button className={`btn btn-outline-success ${pathname === "/" ? styles.active : ''}`} type="button" onClick={() => switchPage("/")}>
+        <button className={`btn btn-outline-success ${pathname === "/" ? styles.active : ''}`} type="button"
+                onClick={() => switchPage("/")}>
           Home
         </button>
         {
@@ -50,6 +55,9 @@ export default function Navbar() {
             )
           })
         }
+        <button className={`btn btn-outline-success ${styles.logout}`} type="button" onClick={onLogout}>
+          Logout
+        </button>
       </form>
     </nav>
   )

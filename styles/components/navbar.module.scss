@@ -13,6 +13,11 @@
   .buttons {
     display: flex;
     gap: $size-100;
+    width: 100%;
+
+    .logout {
+      margin-left: auto;
+    }
 
     button {
       max-height: $size-250;

@@ -4,7 +4,7 @@ import Layout from "../../../components/layout";
 import PageTitle from "../../../components/pageTitle";
 import {Button, Modal} from "react-bootstrap";
 import React, {ChangeEvent, FormEvent, useEffect, useState} from "react";
-import {Car, CarDTO, createCar, searchCars} from "../../../lib/cars";
+import {Car, CarDTO, createCar, deleteCar, searchCars} from "../../../lib/cars";
 import styles from "../../../styles/pages/cars/page.module.scss";
 
 export default function Cars() {
@@ -34,6 +34,18 @@ export default function Cars() {
       const car = await createCar(carDTO);
       setIsShowingCreateModal(false);
       setCars([...cars, car]);
+      setCarDTO(undefined)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const onDelete = async (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
+    e.preventDefault()
+
+    try {
+      await deleteCar(id);
+      setCars([...cars].filter(car => car.id !== id))
     } catch (e) {
       console.error(e)
     }
@@ -111,6 +123,7 @@ export default function Cars() {
           <th scope="col">Model</th>
           <th scope="col">Brand</th>
           <th scope="col">PPH (CHF)</th>
+          <th scope="col">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -121,6 +134,7 @@ export default function Cars() {
                 <td>{car.model}</td>
                 <td>{car.brand}</td>
                 <td>{car.pricePerHour}</td>
+                <td><Button onClick={(e) => onDelete(e, car.id)}>Delete</Button></td>
               </tr>
             )
           })
