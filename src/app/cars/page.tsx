@@ -5,7 +5,6 @@ import PageTitle from "../../../components/pageTitle";
 import {Button, Modal} from "react-bootstrap";
 import React, {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {Car, CarDTO, createCar, deleteCar, searchCars} from "../../../lib/cars";
-import styles from "../../../styles/pages/cars/page.module.scss";
 
 export default function Cars() {
   const [isShowingCreateModal, setIsShowingCreateModal] = useState(false);
@@ -60,12 +59,12 @@ export default function Cars() {
         </button>
       </PageTitle>
 
-      <Modal show={isShowingCreateModal}>
+      <Modal show={isShowingCreateModal} onHide={() => setIsShowingCreateModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Create New Rentable Car</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form onSubmit={onCreate} className={styles.carsForm}>
+          <form onSubmit={onCreate} className="modalForm">
             <div className="form-group">
               <label htmlFor="model">Model</label>
               <input type="text" className="form-control" id="model" value={carDTO?.model}

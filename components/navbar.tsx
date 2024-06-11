@@ -6,18 +6,26 @@ type Mapping = {
   [key: string]: {
     label: string,
     link: string
-  }
+  }[]
 }
 
 const BUTTON_MAPPING: Mapping = {
-  "rent:car": {
-    label: "Rentals",
-    link: "/rentals"
-  },
-  "create:car": {
-    label: "Cars",
-    link: "/cars"
-  },
+  "rent:car": [
+    {
+      label: "Rent Cars",
+      link: "/rent"
+    },
+    {
+      label: "View Rentals",
+      link: "/rentals"
+    }
+  ],
+  "create:car": [
+    {
+      label: "Cars",
+      link: "/cars"
+    }
+  ],
 }
 
 export default function Navbar() {
@@ -43,16 +51,20 @@ export default function Navbar() {
         </button>
         {
           claims.permissions.map(p => {
-            const mapping = BUTTON_MAPPING[p]
+            const mappings = BUTTON_MAPPING[p]
 
-            if (!mapping) return
+            if (!mappings) return
 
-            return (
-              <button key={p} className={`btn btn-outline-success ${pathname === mapping.link ? styles.active : ''}`}
-                      type="button" onClick={() => switchPage(mapping.link)}>
-                {mapping.label}
-              </button>
-            )
+
+            return mappings.map(mapping => {
+              return (
+                <button key={mapping.link}
+                        className={`btn btn-outline-success ${pathname === mapping.link ? styles.active : ''}`}
+                        type="button" onClick={() => switchPage(mapping.link)}>
+                  {mapping.label}
+                </button>
+              )
+            })
           })
         }
         <button className={`btn btn-outline-success ${styles.logout}`} type="button" onClick={onLogout}>
