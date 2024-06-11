@@ -11,7 +11,6 @@ export default function Home() {
   return claims && (
     <Layout>
       <PageTitle title={"Welcome Back"}/>
-      <p>awd</p>
     </Layout>
   )
 }

@@ -1,0 +1,7 @@
+@import "../../variables.scss";
+
+.carsForm {
+  display: flex;
+  flex-direction: column;
+  gap: $size-100;
+}

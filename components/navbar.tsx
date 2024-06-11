@@ -16,8 +16,8 @@ const BUTTON_MAPPING: Mapping = {
     link: "/rentals"
   },
   "create:car": {
-    label: "Rented-Out Cars",
-    link: "/rented-out"
+    label: "Cars",
+    link: "/cars"
   },
 }
 
