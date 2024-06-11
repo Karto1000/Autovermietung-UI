@@ -34,6 +34,7 @@ export default function RentCars() {
     try {
       await rentCar(rentDTO as RentDTO, id)
       setCars([...cars].filter(car => car.id !== id))
+      setIsRentModalShown(false)
     } catch (e) {
       console.error(e)
     }
