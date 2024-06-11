@@ -1,6 +1,9 @@
 @import "../variables";
 
 .pageTitle {
+  h1 {
+    margin-bottom: $size-200;
+  }
   hr {
     margin-top: $size-200;
   }
