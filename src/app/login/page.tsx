@@ -4,6 +4,7 @@ import React, {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {login} from "../../../lib/login";
 import {useRouter} from "next/navigation";
 import styles from "../../../styles/pages/login/page.module.scss"
+import toast from "react-hot-toast";
 
 export default function Login() {
   const [email, setEmail] = useState<string>("")
@@ -26,6 +27,7 @@ export default function Login() {
       sessionStorage.setItem("jwt", jwt)
     } catch (e) {
       console.error(e)
+      toast.error("Login failed")
     }
 
     router.push("/")

@@ -9,8 +9,8 @@ export type PlaceDTO = {
   plz: number
 }
 
-export async function getAllPlaces(): Promise<Place[]> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/places`,
+export async function searchPlaces(q: string = ""): Promise<Place[]> {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/places?q=${q}`,
     {
       method: 'GET',
       headers: {

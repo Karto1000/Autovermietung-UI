@@ -15,20 +15,9 @@ export type Rental = {
   end: number
 }
 
-type SearchFilters = {
-  start?: number,
-  end?: number,
-  carModel: string
-}
-
-export async function search(filters: SearchFilters): Promise<Rental[]> {
-  const searchParams = new URLSearchParams()
-  if (filters.start) searchParams.append("start", filters.start.toString())
-  if (filters.end) searchParams.append("end", filters.end.toString())
-  searchParams.append("carModel", filters.carModel)
-
+export async function search(q: string = ""): Promise<Rental[]> {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/rentals?${searchParams}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/rentals?q=${q}`,
     {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem("jwt")}`

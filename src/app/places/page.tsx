@@ -5,25 +5,37 @@ import Layout from "../../../components/layout";
 import PageTitle from "../../../components/pageTitle";
 import React, {useEffect, useState} from "react";
 import {Button, Modal} from "react-bootstrap";
-import {createPlace, deletePlace, getAllPlaces, Place, PlaceDTO} from "../../../lib/place";
+import {createPlace, deletePlace, searchPlaces, Place, PlaceDTO, updatePlace} from "../../../lib/place";
+import toast from "react-hot-toast";
 
 export default function Places() {
   const hasChecked = usePermissions("create:place")
   const [places, setPlaces] = useState<Place[]>([])
+
   const [isCreateModalShown, setIsCreateModalShown] = useState<boolean>(false)
+  const [isEditModalShown, setIsEditModalShown] = useState<boolean>(false)
+
+  const [creatingPlaceDTO, setCreatingPlaceDTO] = useState<PlaceDTO>({name: "", plz: 0})
+  const [editingPlace, setEditingPlace] = useState<Place>()
+
+  const [query, setQuery] = useState("")
 
   useEffect(() => {
-    const fetchPlaces = async () => {
-      try {
-        const places = await getAllPlaces()
-        setPlaces(places)
-      } catch (e) {
-        console.error(e)
+    const debounce = setTimeout(() => {
+      const fetchPlaces = async () => {
+        try {
+          const places = await searchPlaces(query)
+          setPlaces(places)
+        } catch (e) {
+          console.error(e)
+        }
       }
-    }
 
-    fetchPlaces()
-  }, []);
+      fetchPlaces()
+    }, 100)
+
+    return () => clearTimeout(debounce)
+  }, [query]);
 
   const onDelete = async (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
     try {
@@ -31,28 +43,36 @@ export default function Places() {
       setPlaces(places.filter(place => place.id !== id))
     } catch (e) {
       console.error(e)
+      toast.error("Failed to delete place")
     }
   }
 
   const onCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const name = (e.target as any).name.value
-    const plz = parseInt((e.target as any).plz.value)
-
-    if (!name || !plz) return
-
-    const creatingPlace: PlaceDTO = {
-      name: name,
-      plz: plz
-    }
-
     try {
-      const place = await createPlace(creatingPlace)
+      const place = await createPlace(creatingPlaceDTO)
       setPlaces([...places, place])
       setIsCreateModalShown(false)
     } catch (e) {
       console.error(e)
+      toast.error("Failed to create place")
+    }
+  }
+
+  const onEdit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (!editingPlace) return;
+    if (!editingPlace.name || !editingPlace.plz) return
+
+    try {
+      const place = await updatePlace(editingPlace.id, editingPlace)
+      setPlaces(places.filter(p => p.id !== place.id).concat(place))
+      setIsEditModalShown(false)
+    } catch (e) {
+      console.error(e)
+      toast.error("Failed to update place")
     }
   }
 
@@ -72,39 +92,86 @@ export default function Places() {
           <form className="modalForm" onSubmit={onCreate}>
             <div className="form-group">
               <label htmlFor="name">Name</label>
-              <input type="text" className="form-control" id="name"/>
+              <input type="text" className="form-control" id="name" value={creatingPlaceDTO?.name} onChange={(e) => {
+                setCreatingPlaceDTO({
+                  ...creatingPlaceDTO,
+                  name: e.target.value
+                } as PlaceDTO)
+              }}/>
             </div>
             <div className="form-group">
               <label htmlFor="plz">Plz</label>
-              <input type="number" className="form-control" id="plz"/>
+              <input type="number" className="form-control" id="plz" value={creatingPlaceDTO?.plz} onChange={(e) => {
+                setCreatingPlaceDTO({
+                  ...creatingPlaceDTO,
+                  plz: parseInt(e.target.value)
+                } as PlaceDTO)
+              }}/>
             </div>
             <Button variant={"primary"} type={"submit"}>Create</Button>
           </form>
         </Modal.Body>
       </Modal>
 
-      <table className="table table-striped">
-        <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Plz</th>
-          <th scope="col">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {
-          places.map((place) => (
-            <tr key={place.id}>
-              <td>{place.name}</td>
-              <td>{place.plz}</td>
-              <td className="d-flex gap-2">
-                <Button variant={"outline-danger"} onClick={(e) => onDelete(e, place.id)}>Delete</Button>
-              </td>
-            </tr>
-          ))
-        }
-        </tbody>
-      </table>
+      {
+        editingPlace ?
+          <Modal show={isEditModalShown} onHide={() => setIsEditModalShown(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Create new Place</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <form className="modalForm" onSubmit={onEdit}>
+                <div className="form-group">
+                  <label htmlFor="name">Name</label>
+                  <input type="text" className="form-control" id="name" value={editingPlace.name} onChange={(e) => {
+                    setEditingPlace({...editingPlace, name: e.target.value})
+                  }}/>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="plz">Plz</label>
+                  <input type="number" className="form-control" id="plz" value={editingPlace.plz} onChange={(e) => {
+                    setEditingPlace({...editingPlace, plz: parseInt(e.target.value)})
+                  }}/>
+                </div>
+                <Button variant={"primary"} type={"submit"}>Save</Button>
+              </form>
+            </Modal.Body>
+          </Modal>
+          :
+          <></>
+      }
+
+      <div className="d-flex flex-column gap-2">
+        <input type={"text"} id="search" className="form-control" onChange={(e) => setQuery(e.target.value)}
+               value={query}/>
+
+        <table className="table">
+          <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Plz</th>
+            <th scope="col">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          {
+            places.map((place) => (
+              <tr key={place.id}>
+                <td>{place.name}</td>
+                <td>{place.plz}</td>
+                <td className="d-flex gap-2">
+                  <Button variant={"outline-danger"} onClick={(e) => onDelete(e, place.id)}>Delete</Button>
+                  <Button variant={"outline-primary"} onClick={(e) => {
+                    setIsEditModalShown(true)
+                    setEditingPlace(place)
+                  }}>Edit</Button>
+                </td>
+              </tr>
+            ))
+          }
+          </tbody>
+        </table>
+      </div>
     </Layout>
   )
 }

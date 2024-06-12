@@ -15,18 +15,24 @@ export default function Cars() {
 
   const [cars, setCars] = useState<Car[]>([]);
 
-  useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        const cars = await searchCars();
-        setCars(cars);
-      } catch (e) {
-        console.error(e)
-      }
-    }
+  const [query, setQuery] = useState("")
 
-    fetchCars()
-  }, [])
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      const fetchCars = async () => {
+        try {
+          const cars = await searchCars(query);
+          setCars(cars);
+        } catch (e) {
+          console.error(e)
+        }
+      }
+
+      fetchCars()
+    }, 100)
+
+    return () => clearTimeout(debounce)
+  }, [query])
 
   const onCreate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -163,36 +169,42 @@ export default function Cars() {
           </form>
         </Modal.Body>
       </Modal>
-      <table className="table table-striped">
-        <thead>
-        <tr>
-          <th scope="col">Model</th>
-          <th scope="col">Brand</th>
-          <th scope="col">PPH (CHF)</th>
-          <th scope="col">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {
-          cars.map(car => {
-            return (
-              <tr key={car.id}>
-                <td>{car.model}</td>
-                <td>{car.brand}</td>
-                <td>{car.pricePerHour}</td>
-                <td className="d-flex gap-2">
-                  <Button onClick={(e) => onDelete(e, car.id)}>Delete</Button>
-                  <Button onClick={(e) => {
-                    setIsShowingEditModal(true)
-                    setEditingCar(car)
-                  }}>Edit</Button>
-                </td>
-              </tr>
-            )
-          })
-        }
-        </tbody>
-      </table>
+
+      <div className="d-flex gap-2 flex-column">
+        <input type={"text"} id="search" className="form-control" onChange={(e) => setQuery(e.target.value)}
+               value={query}/>
+
+        <table className="table">
+          <thead>
+          <tr>
+            <th scope="col">Model</th>
+            <th scope="col">Brand</th>
+            <th scope="col">PPH (CHF)</th>
+            <th scope="col">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          {
+            cars.map(car => {
+              return (
+                <tr key={car.id}>
+                  <td>{car.model}</td>
+                  <td>{car.brand}</td>
+                  <td>{car.pricePerHour}</td>
+                  <td className="d-flex gap-2">
+                    <Button variant={"outline-danger"} onClick={(e) => onDelete(e, car.id)}>Delete</Button>
+                    <Button variant={"outline-primary"} onClick={(e) => {
+                      setIsShowingEditModal(true)
+                      setEditingCar(car)
+                    }}>Edit</Button>
+                  </td>
+                </tr>
+              )
+            })
+          }
+          </tbody>
+        </table>
+      </div>
     </Layout>
   )
 }

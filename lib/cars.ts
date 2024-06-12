@@ -69,8 +69,8 @@ export async function updateCar(car: CarDTO, id: number): Promise<Car> {
   return body as Car
 }
 
-export async function searchCars(): Promise<Car[]> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cars?brand=&model=`,
+export async function searchCars(q: string = ""): Promise<Car[]> {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cars?q=${q}`,
     {
       method: "GET",
       headers: {
@@ -88,8 +88,8 @@ export async function searchCars(): Promise<Car[]> {
   return body as Car[]
 }
 
-export async function searchNotRentedCars(): Promise<Car[]> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cars/not-rented?brand=&model=`,
+export async function searchNotRentedCars(q: string = ""): Promise<Car[]> {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cars/not-rented?q=${q}`,
     {
       method: "GET",
       headers: {
