@@ -31,22 +31,54 @@ export default function Login() {
   }
 
   return (
-    <form onSubmit={onSubmit}>
-      <div className="form-group">
-        <label htmlFor="email">Email address</label>
-        <input type="email" className="form-control" id="email" value={email} aria-describedby="emailHelp"
-               placeholder="Enter email" onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          setEmail(e.target.value)
-        }}/>
+    <div>
+      <form onSubmit={onSubmit}>
+        <div className="form-group">
+          <label htmlFor="email">Email address</label>
+          <input type="email" className="form-control" id="email" value={email} aria-describedby="emailHelp"
+                 placeholder="Enter email" onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            setEmail(e.target.value)
+          }}/>
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+          <input type="password" className="form-control" id="password" value={password} placeholder="Password"
+                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                   setPassword(e.target.value)
+                 }}/>
+        </div>
+        <button type="submit" className="btn btn-primary">Submit</button>
+      </form>
+
+      <div className={"d-flex gap-2"}>
+        <button
+          className={"btn btn-outline-success"}
+          onClick={() => {
+          setEmail("admin@admin.com")
+          setPassword("admin")
+        }}>
+          Login as Admin
+        </button>
+
+        <button
+          className={"btn btn-outline-success"}
+          onClick={() => {
+          setEmail("firm@firm.com")
+          setPassword("firm")
+        }}>
+          Login as Firm
+        </button>
+
+        <button
+          className={"btn btn-outline-success"}
+          onClick={() => {
+            setEmail("user@user.com")
+            setPassword("user")
+          }}>
+          Login as User
+        </button>
       </div>
-      <div className="form-group">
-        <label htmlFor="password">Password</label>
-        <input type="password" className="form-control" id="password" value={password} placeholder="Password"
-               onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                 setPassword(e.target.value)
-               }}/>
-      </div>
-      <button type="submit" className="btn btn-primary">Submit</button>
-    </form>
+    </div>
+
   )
 }

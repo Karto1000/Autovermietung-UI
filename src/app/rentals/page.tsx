@@ -6,9 +6,11 @@ import moment from "moment/moment";
 import React, {useEffect, useState} from "react";
 import {cancelRental, Rental, search} from "../../../lib/rentals";
 import {Button} from "react-bootstrap";
+import usePermissions from "../../../hooks/usePermissions";
 
 export default function Rentals() {
   const [rentals, setRentals] = useState<Rental[]>([])
+  const hasChecked = usePermissions("rent:car")
 
   useEffect(() => {
     const fetchRentals = async () => {
@@ -33,7 +35,7 @@ export default function Rentals() {
     }
   }
 
-  return (
+  return hasChecked && (
     <Layout>
       <PageTitle title={"Currently Rented Cars"}/>
       <table className="table table-striped">

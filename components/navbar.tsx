@@ -26,6 +26,12 @@ const BUTTON_MAPPING: Mapping = {
       link: "/cars"
     }
   ],
+  "create:place": [
+    {
+      label: "Places",
+      link: "/places"
+    }
+  ]
 }
 
 export default function Navbar() {

@@ -5,12 +5,14 @@ import PageTitle from "../../../components/pageTitle";
 import React, {ChangeEvent, useEffect, useState} from "react";
 import {Car, rentCar, RentDTO, searchNotRentedCars} from "../../../lib/cars";
 import {Button, Modal} from "react-bootstrap";
+import usePermissions from "../../../hooks/usePermissions";
 
 export default function RentCars() {
   const [cars, setCars] = useState<Car[]>([]);
   const [isRentModalShown, setIsRentModalShown] = useState(false);
   const [rentingCar, setRentingCar] = useState<Car>();
   const [rentDTO, setRentDTO] = useState<{ start?: number, end?: number }>();
+  const hasChecked = usePermissions("rent:car")
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -40,7 +42,7 @@ export default function RentCars() {
     }
   }
 
-  return (
+  return hasChecked && (
     <Layout>
       <PageTitle title={"Rent new Cars"}/>
 
