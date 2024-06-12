@@ -3,6 +3,7 @@
 import React, {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {login} from "../../../lib/login";
 import {useRouter} from "next/navigation";
+import styles from "../../../styles/pages/login/page.module.scss"
 
 export default function Login() {
   const [email, setEmail] = useState<string>("")
@@ -31,8 +32,8 @@ export default function Login() {
   }
 
   return (
-    <div>
-      <form onSubmit={onSubmit}>
+    <div className={styles.main}>
+      <form onSubmit={onSubmit} className="modalForm">
         <div className="form-group">
           <label htmlFor="email">Email address</label>
           <input type="email" className="form-control" id="email" value={email} aria-describedby="emailHelp"
@@ -47,7 +48,7 @@ export default function Login() {
                    setPassword(e.target.value)
                  }}/>
         </div>
-        <button type="submit" className="btn btn-primary">Submit</button>
+        <button type="submit" className="btn btn-primary">Login</button>
       </form>
 
       <div className={"d-flex gap-2"}>
