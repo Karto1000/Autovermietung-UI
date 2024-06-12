@@ -7,6 +7,7 @@ import React, {useEffect, useState} from "react";
 import {Button, Modal} from "react-bootstrap";
 import {createPlace, deletePlace, searchPlaces, Place, PlaceDTO, updatePlace} from "../../../lib/place";
 import toast from "react-hot-toast";
+import {confirm} from "../../../lib/utils";
 
 export default function Places() {
   const hasChecked = usePermissions("create:place")
@@ -163,7 +164,10 @@ export default function Places() {
                 <td>{place.name}</td>
                 <td>{place.plz}</td>
                 <td className="d-flex gap-2">
-                  <Button variant={"outline-danger"} onClick={(e) => onDelete(e, place.id)}>Delete</Button>
+                  <Button variant={"outline-danger"} onClick={async (e) => {
+                    if (!await confirm("Confirm Delete", "Are you sure you want to delete this place?")) return;
+                    await onDelete(e, place.id)}
+                  }>Delete</Button>
                   <Button variant={"outline-primary"} onClick={(e) => {
                     setIsEditModalShown(true)
                     setEditingPlace(place)

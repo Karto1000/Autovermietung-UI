@@ -6,6 +6,7 @@ import {Button, Modal} from "react-bootstrap";
 import React, {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {Car, CarDTO, createCar, deleteCar, searchCars, updateCar} from "../../../lib/cars";
 import toast from "react-hot-toast";
+import {confirm} from "../../../lib/utils";
 
 export default function Cars() {
   const [isShowingCreateModal, setIsShowingCreateModal] = useState<boolean>(false);
@@ -201,7 +202,10 @@ export default function Cars() {
                   <td>{car.brand}</td>
                   <td>{car.pricePerHour}</td>
                   <td className="d-flex gap-2">
-                    <Button variant={"outline-danger"} onClick={(e) => onDelete(e, car.id)}>Delete</Button>
+                    <Button variant={"outline-danger"} onClick={async (e) => {
+                      if (!await confirm("Confirm Delete", "Are you sure you want to delete this car?")) return;
+                      await onDelete(e, car.id)}
+                    }>Delete</Button>
                     <Button variant={"outline-primary"} onClick={(e) => {
                       setIsShowingEditModal(true)
                       setEditingCar(car)

@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import {Inter} from 'next/font/google'
 import React from "react";
 import {Toaster} from "react-hot-toast";
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 const inter = Inter({subsets: ['latin']})
 

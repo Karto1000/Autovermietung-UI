@@ -7,6 +7,7 @@ import {Car, rentCar, RentDTO, searchNotRentedCars} from "../../../lib/cars";
 import {Button, Modal} from "react-bootstrap";
 import usePermissions from "../../../hooks/usePermissions";
 import toast from "react-hot-toast";
+import {confirm} from "../../../lib/utils";
 
 export default function RentCars() {
   const [cars, setCars] = useState<Car[]>([]);
@@ -60,10 +61,9 @@ export default function RentCars() {
           <Modal.Title>Rent {rentingCar?.model}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form className={"modalForm"} onSubmit={(e) => {
+          <form className={"modalForm"} onSubmit={async (e) => {
             if (!rentingCar) return;
-
-            onSubmit(e, rentingCar.id)
+            await onSubmit(e, rentingCar.id)
           }
           }>
             <div className="form-group">

@@ -8,6 +8,8 @@ import {cancelRental, Rental, search} from "../../../lib/rentals";
 import {Button} from "react-bootstrap";
 import usePermissions from "../../../hooks/usePermissions";
 import toast from "react-hot-toast";
+import {confirmAlert} from "react-confirm-alert";
+import {confirm} from "../../../lib/utils";
 
 export default function Rentals() {
   const [rentals, setRentals] = useState<Rental[]>([])
@@ -74,7 +76,10 @@ export default function Rentals() {
                   <td>{totalPrice}</td>
                   <td>{moment(rental.start * 1000).format("DD.MM.YYYY")} - {moment(rental.end * 1000).format("DD.MM.YYYY")} ({Math.floor((rental.end - rental.start) / 86400)} Days)</td>
                   <td>{rental.car.firm.name}</td>
-                  <td><Button variant={"outline-danger"} onClick={() => onCancel(rental.id)}>Cancel</Button></td>
+                  <td><Button variant={"outline-danger"} onClick={async () => {
+                    if (!await confirm("Confirm to cancel", "Are you sure you want to cancel this rental?")) return;
+                    await onCancel(rental.id)
+                  }}>Cancel</Button></td>
                 </tr>
               )
             })
