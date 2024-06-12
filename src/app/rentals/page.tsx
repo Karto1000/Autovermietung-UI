@@ -37,6 +37,7 @@ export default function Rentals() {
     try {
       await cancelRental(id);
       setRentals([...rentals].filter(rental => rental.id !== id))
+      toast.success("Rental cancelled successfully")
     } catch (e) {
       console.log(e)
       toast.error("Failed to cancel rental")

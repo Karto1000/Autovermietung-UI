@@ -44,6 +44,7 @@ export default function RentCars() {
       await rentCar(rentDTO as RentDTO, id)
       setCars([...cars].filter(car => car.id !== id))
       setIsRentModalShown(false)
+      toast.success("Car rented successfully")
     } catch (e) {
       console.error(e)
       toast.error("Failed to rent car")

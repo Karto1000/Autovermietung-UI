@@ -5,6 +5,7 @@ import PageTitle from "../../../components/pageTitle";
 import {Button, Modal} from "react-bootstrap";
 import React, {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {Car, CarDTO, createCar, deleteCar, searchCars, updateCar} from "../../../lib/cars";
+import toast from "react-hot-toast";
 
 export default function Cars() {
   const [isShowingCreateModal, setIsShowingCreateModal] = useState<boolean>(false);
@@ -44,8 +45,10 @@ export default function Cars() {
       setIsShowingCreateModal(false);
       setCars([...cars, car]);
       setCreatingCarDTO(undefined)
+      toast.success("Car created successfully")
     } catch (e) {
       console.error(e)
+      toast.error("Failed to create car")
     }
   }
 
@@ -55,8 +58,10 @@ export default function Cars() {
     try {
       await deleteCar(id);
       setCars([...cars].filter(car => car.id !== id))
+      toast.success("Car deleted successfully")
     } catch (e) {
       console.error(e)
+      toast.error("Failed to delete car")
     }
   }
 
@@ -70,8 +75,10 @@ export default function Cars() {
       setIsShowingEditModal(false);
       setCars([...cars].map(c => c.id === car.id ? car : c));
       setEditingCar(undefined)
+      toast.success("Car updated successfully")
     } catch (e) {
       console.error(e)
+      toast.error("Failed to update car")
     }
 
   }
@@ -132,6 +139,8 @@ export default function Cars() {
                 }
               }}/>
             </div>
+
+            <button type="submit" className="btn btn-primary">Create</button>
           </form>
         </Modal.Body>
       </Modal>

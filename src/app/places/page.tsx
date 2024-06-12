@@ -41,6 +41,7 @@ export default function Places() {
     try {
       await deletePlace(id)
       setPlaces(places.filter(place => place.id !== id))
+      toast.success("Place deleted successfully")
     } catch (e) {
       console.error(e)
       toast.error("Failed to delete place")
@@ -54,6 +55,7 @@ export default function Places() {
       const place = await createPlace(creatingPlaceDTO)
       setPlaces([...places, place])
       setIsCreateModalShown(false)
+      toast.success("Place created successfully")
     } catch (e) {
       console.error(e)
       toast.error("Failed to create place")
@@ -70,6 +72,7 @@ export default function Places() {
       const place = await updatePlace(editingPlace.id, editingPlace)
       setPlaces(places.filter(p => p.id !== place.id).concat(place))
       setIsEditModalShown(false)
+      toast.success("Place updated successfully")
     } catch (e) {
       console.error(e)
       toast.error("Failed to update place")
