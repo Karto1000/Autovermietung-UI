@@ -12,7 +12,11 @@ export default function Cars() {
   const [isShowingCreateModal, setIsShowingCreateModal] = useState<boolean>(false);
   const [isShowingEditModal, setIsShowingEditModal] = useState<boolean>(false);
 
-  const [creatingCarDTO, setCreatingCarDTO] = useState<CarDTO>();
+  const [creatingCarDTO, setCreatingCarDTO] = useState<CarDTO>({
+    model: "",
+    brand: "",
+    pricePerHour: 100
+  });
   const [editingCar, setEditingCar] = useState<Car>();
 
   const [cars, setCars] = useState<Car[]>([]);
@@ -45,7 +49,7 @@ export default function Cars() {
       const car = await createCar(creatingCarDTO);
       setIsShowingCreateModal(false);
       setCars([...cars, car]);
-      setCreatingCarDTO(undefined)
+      setCreatingCarDTO({brand: "", model: "", pricePerHour: 100})
       toast.success("Car created successfully")
     } catch (e) {
       console.error(e)
@@ -75,7 +79,11 @@ export default function Cars() {
       const car = await updateCar(editingCar as CarDTO, editingCar.id);
       setIsShowingEditModal(false);
       setCars([...cars].map(c => c.id === car.id ? car : c));
-      setEditingCar(undefined)
+      setEditingCar({
+        brand: "",
+        model: "",
+        pricePerHour: 100
+      } as Car)
       toast.success("Car updated successfully")
     } catch (e) {
       console.error(e)
@@ -118,6 +126,7 @@ export default function Cars() {
               <label htmlFor="pricePerHour">Price Per Hour</label>
               <input type="number" className="form-control" id="pricePerHour" value={creatingCarDTO?.pricePerHour}
                      placeholder="Enter Price Per Hour" onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                if (isNaN(Number(e.target.value))) return;
                 setCreatingCarDTO({...creatingCarDTO, pricePerHour: Number(e.target.value)} as CarDTO);
               }}/>
             </div>
@@ -172,7 +181,8 @@ export default function Cars() {
               <label htmlFor="pricePerHour">Price Per Hour</label>
               <input type="number" className="form-control" id="pricePerHour" value={editingCar?.pricePerHour}
                      placeholder="Enter Price Per Hour" onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                setEditingCar({...creatingCarDTO, pricePerHour: Number(e.target.value)} as Car);
+                if (isNaN(Number(e.target.value))) return;
+                setEditingCar({...editingCar, pricePerHour: Number(e.target.value)} as Car);
               }}/>
             </div>
             <button type="submit" className="btn btn-primary">Save</button>
@@ -204,7 +214,8 @@ export default function Cars() {
                   <td className="d-flex gap-2">
                     <Button variant={"outline-danger"} onClick={async (e) => {
                       if (!await confirm("Confirm Delete", "Are you sure you want to delete this car?")) return;
-                      await onDelete(e, car.id)}
+                      await onDelete(e, car.id)
+                    }
                     }>Delete</Button>
                     <Button variant={"outline-primary"} onClick={(e) => {
                       setIsShowingEditModal(true)

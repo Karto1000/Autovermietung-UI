@@ -56,6 +56,7 @@ export default function Places() {
       const place = await createPlace(creatingPlaceDTO)
       setPlaces([...places, place])
       setIsCreateModalShown(false)
+      setCreatingPlaceDTO({name: "", plz: 0})
       toast.success("Place created successfully")
     } catch (e) {
       console.error(e)
@@ -73,6 +74,7 @@ export default function Places() {
       const place = await updatePlace(editingPlace.id, editingPlace)
       setPlaces(places.filter(p => p.id !== place.id).concat(place))
       setIsEditModalShown(false)
+      setEditingPlace(undefined)
       toast.success("Place updated successfully")
     } catch (e) {
       console.error(e)
@@ -106,9 +108,11 @@ export default function Places() {
             <div className="form-group">
               <label htmlFor="plz">Plz</label>
               <input type="number" className="form-control" id="plz" value={creatingPlaceDTO?.plz} onChange={(e) => {
+                if (isNaN(Number(e.target.value))) return;
+
                 setCreatingPlaceDTO({
                   ...creatingPlaceDTO,
-                  plz: parseInt(e.target.value)
+                  plz: Number(e.target.value)
                 } as PlaceDTO)
               }}/>
             </div>
@@ -134,7 +138,8 @@ export default function Places() {
                 <div className="form-group">
                   <label htmlFor="plz">Plz</label>
                   <input type="number" className="form-control" id="plz" value={editingPlace.plz} onChange={(e) => {
-                    setEditingPlace({...editingPlace, plz: parseInt(e.target.value)})
+                    if (isNaN(Number(e.target.value))) return;
+                    setEditingPlace({...editingPlace, plz: Number(e.target.value)})
                   }}/>
                 </div>
                 <Button variant={"primary"} type={"submit"}>Save</Button>
