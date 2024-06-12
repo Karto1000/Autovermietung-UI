@@ -55,7 +55,7 @@ export default function Rentals() {
             const totalPrice = Math.floor((rental.end - rental.start) / 60 / 60) * rental.car.pricePerHour
             return (
               <tr key={rental.id}>
-                <td>{rental.car.model}</td>
+                <td>{rental.car.brand} {rental.car.model}</td>
                 <td>{rental.car.pricePerHour}</td>
                 <td>{totalPrice}</td>
                 <td>{moment(rental.end * 1000).format("HH:mm DD.MM.YYYY")} ({Math.floor((rental.end - rental.start) / 86400)} Days)</td>

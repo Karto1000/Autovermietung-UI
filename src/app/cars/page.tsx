@@ -4,11 +4,15 @@ import Layout from "../../../components/layout";
 import PageTitle from "../../../components/pageTitle";
 import {Button, Modal} from "react-bootstrap";
 import React, {ChangeEvent, FormEvent, useEffect, useState} from "react";
-import {Car, CarDTO, createCar, deleteCar, searchCars} from "../../../lib/cars";
+import {Car, CarDTO, createCar, deleteCar, searchCars, updateCar} from "../../../lib/cars";
 
 export default function Cars() {
-  const [isShowingCreateModal, setIsShowingCreateModal] = useState(false);
-  const [carDTO, setCarDTO] = useState<CarDTO>();
+  const [isShowingCreateModal, setIsShowingCreateModal] = useState<boolean>(false);
+  const [isShowingEditModal, setIsShowingEditModal] = useState<boolean>(false);
+
+  const [creatingCarDTO, setCreatingCarDTO] = useState<CarDTO>();
+  const [editingCar, setEditingCar] = useState<Car>();
+
   const [cars, setCars] = useState<Car[]>([]);
 
   useEffect(() => {
@@ -27,13 +31,13 @@ export default function Cars() {
   const onCreate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!carDTO) return;
+    if (!creatingCarDTO) return;
 
     try {
-      const car = await createCar(carDTO);
+      const car = await createCar(creatingCarDTO);
       setIsShowingCreateModal(false);
       setCars([...cars, car]);
-      setCarDTO(undefined)
+      setCreatingCarDTO(undefined)
     } catch (e) {
       console.error(e)
     }
@@ -50,12 +54,27 @@ export default function Cars() {
     }
   }
 
+  const onEdit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (!editingCar) return;
+
+    try {
+      const car = await updateCar(editingCar as CarDTO, editingCar.id);
+      setIsShowingEditModal(false);
+      setCars([...cars].map(c => c.id === car.id ? car : c));
+      setEditingCar(undefined)
+    } catch (e) {
+      console.error(e)
+    }
+
+  }
+
   return (
     <Layout>
       <PageTitle title={"Rentable Cars"}>
-        <button type={"button"} className={"btn btn-outline-success"} onClick={() => {
-          setIsShowingCreateModal(true);
-        }}>Rent out a new Car
+        <button type={"button"} className={"btn btn-outline-success"} onClick={() => setIsShowingCreateModal(true)}>Rent
+          out a new Car
         </button>
       </PageTitle>
 
@@ -67,25 +86,25 @@ export default function Cars() {
           <form onSubmit={onCreate} className="modalForm">
             <div className="form-group">
               <label htmlFor="model">Model</label>
-              <input type="text" className="form-control" id="model" value={carDTO?.model}
+              <input type="text" className="form-control" id="model" value={creatingCarDTO?.model}
                      placeholder="Enter Model" onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                setCarDTO({...carDTO, model: e.target.value} as CarDTO);
+                setCreatingCarDTO({...creatingCarDTO, model: e.target.value} as CarDTO);
               }}/>
             </div>
 
             <div className="form-group">
               <label htmlFor="brand">Brand</label>
-              <input type="text" className="form-control" id="brand" value={carDTO?.brand}
+              <input type="text" className="form-control" id="brand" value={creatingCarDTO?.brand}
                      placeholder="Enter Brand" onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                setCarDTO({...carDTO, brand: e.target.value} as CarDTO);
+                setCreatingCarDTO({...creatingCarDTO, brand: e.target.value} as CarDTO);
               }}/>
             </div>
 
             <div className="form-group">
               <label htmlFor="pricePerHour">Price Per Hour</label>
-              <input type="number" className="form-control" id="pricePerHour" value={carDTO?.pricePerHour}
+              <input type="number" className="form-control" id="pricePerHour" value={creatingCarDTO?.pricePerHour}
                      placeholder="Enter Price Per Hour" onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                setCarDTO({...carDTO, pricePerHour: Number(e.target.value)} as CarDTO);
+                setCreatingCarDTO({...creatingCarDTO, pricePerHour: Number(e.target.value)} as CarDTO);
               }}/>
             </div>
 
@@ -103,19 +122,47 @@ export default function Cars() {
                   if (!e.target?.result) return;
 
                   // @ts-ignore
-                  setCarDTO({...carDTO, picture: e.target.result.toString()});
+                  setCreatingCarDTO({...creatingCarDTO, picture: e.target.result.toString()});
                 }
               }}/>
             </div>
-
-            <button type="submit" className="btn btn-primary">Submit</button>
           </form>
         </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={() => setIsShowingCreateModal(false)}>Close</Button>
-        </Modal.Footer>
       </Modal>
 
+      <Modal show={isShowingEditModal} onHide={() => setIsShowingEditModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Car</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form onSubmit={onEdit} className="modalForm">
+            <div className="form-group">
+              <label htmlFor="model">Model</label>
+              <input type="text" className="form-control" id="model" value={editingCar?.model}
+                     placeholder="Enter Model" onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setEditingCar({...editingCar, model: e.target.value} as Car);
+              }}/>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="brand">Brand</label>
+              <input type="text" className="form-control" id="brand" value={editingCar?.brand}
+                     placeholder="Enter Brand" onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setEditingCar({...editingCar, brand: e.target.value} as Car);
+              }}/>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="pricePerHour">Price Per Hour</label>
+              <input type="number" className="form-control" id="pricePerHour" value={editingCar?.pricePerHour}
+                     placeholder="Enter Price Per Hour" onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setEditingCar({...creatingCarDTO, pricePerHour: Number(e.target.value)} as Car);
+              }}/>
+            </div>
+            <button type="submit" className="btn btn-primary">Save</button>
+          </form>
+        </Modal.Body>
+      </Modal>
       <table className="table table-striped">
         <thead>
         <tr>
@@ -133,7 +180,13 @@ export default function Cars() {
                 <td>{car.model}</td>
                 <td>{car.brand}</td>
                 <td>{car.pricePerHour}</td>
-                <td><Button onClick={(e) => onDelete(e, car.id)}>Delete</Button></td>
+                <td className="d-flex gap-2">
+                  <Button onClick={(e) => onDelete(e, car.id)}>Delete</Button>
+                  <Button onClick={(e) => {
+                    setIsShowingEditModal(true)
+                    setEditingCar(car)
+                  }}>Edit</Button>
+                </td>
               </tr>
             )
           })
